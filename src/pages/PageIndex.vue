@@ -1,73 +1,94 @@
+<!--主页面框架-->
 <template>
 	<div class="full-height">
 		<a-layout style="min-height: 100vh">
+			<!--侧边栏-->
 			<a-layout-sider style="background-color: white">
+				<!--文字logo-->
 				<div class="logo animate__animated animate__backInLeft">
 					忆梦博客-管理端
 				</div>
-				<a-menu mode="inline" :default-selected-keys="['1,/index,仪表盘']" @click="toUrl"
+				<!--侧边菜单（二级菜单）-->
+				<a-menu mode="inline" :default-selected-keys="['k1']" @click="toUrl"
 						:inline-collapsed="collapsed">
-					<template v-for="item in userInfo.authMenuList">
-						<a-menu-item v-if="item.children.length === 0" :key="getKey(item.key, item.url, item.title)">
-							<a-icon :type="item.iconType"/>
-							<span>{{ item.title }}</span>
-						</a-menu-item>
-						<sub-menu v-else :key="getKey(item.key, item.url, item.title)" :menu-info="item"/>
-					</template>
+					<a-menu-item key="k1">
+						<a-icon type="setting"/>
+						<span>字典管理</span>
+					</a-menu-item>
+					<a-menu-item key="k2">
+						<a-icon type="setting"/>
+						<span>日志查询</span>
+					</a-menu-item>
+					<a-menu-item key="k3">
+						<a-icon type="setting"/>
+						<span>数据配置</span>
+					</a-menu-item>
 				</a-menu>
 			</a-layout-sider>
+			<!--内容区域-->
 			<a-layout>
+				<!--header区域-->
 				<a-layout-header style="background: #fff; padding: 0; border-radius: 5px;"
 								 class="top-nav animate__animated animate__backInRight">
 					<a-row style="margin-top: 0.5em">
+						<!--顶部菜单栏（一级菜单）-->
 						<a-col :span="14" style="padding-left: 1em">
-							<a-menu v-model="current" mode="horizontal">
-								<a-menu-item key="mail">
-									<a-icon type="mail"/>
-									管理系统
-								</a-menu-item>
-								<a-menu-item key="app">
+							<a-menu v-model="defaultSelectLevel1MenuKey" mode="horizontal">
+								<a-menu-item key="dev">
 									<a-icon type="appstore"/>
-									接入管理
+									开发管理
 								</a-menu-item>
-								<a-menu-item key="alipay">
+								<a-menu-item key="system">
 									<a-icon type="appstore"/>
-									服务管理
+									系统管理
+								</a-menu-item>
+								<a-menu-item key="blog">
+									<a-icon type="appstore"/>
+									博客管理
 								</a-menu-item>
 							</a-menu>
 						</a-col>
+						<!--用户操作区域-->
 						<a-col :span="10" style="text-align: right;padding-right: 24px">
 							<no-select-font style="margin-right: 5px;font-size: 0.8em"
-											:text="'你好！' + userInfo.userRole.name + '-' + userInfo.username"/>
+											:text="'你好！管理员' + '-' + userInfo.username"/>
 							<a href="#" @click.prevent="updatePasswordVisible = true" class="sys">[修改密码]</a>
 							<a href="#" @click.prevent="exitLoginVisible = true" class="sys">[退出登录]</a>
 						</a-col>
 					</a-row>
 				</a-layout-header>
+				<!--操作内容区域-->
 				<a-layout-content style="margin: 0 16px">
 					<div :style="{ padding: '1em', background: '#fff', minHeight: '98%', marginTop: '0.5em' }">
+						<!--TODO 测试用（模拟菜单单击）-->
 						<div :style="{ marginBottom: '16px' }">
 							<a-button @click="add">
 								ADD
 							</a-button>
 						</div>
+						<!--选项卡区域-->
 						<a-tabs v-model="activeKey" hide-add type="editable-card" @edit="onEdit">
-							<a-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title" :closable="pane.closable">
+							<!--选项卡-->
+							<a-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title"
+										:closable="pane.closable">
 								{{ pane.content }}
 							</a-tab-pane>
-							<a-popover v-model="visible" trigger="click" slot="tabBarExtraContent" placement="bottomRight">
+							<!--快捷关闭选项卡页面功能区域-->
+							<a-popover v-model="visible" trigger="click" slot="tabBarExtraContent"
+									   placement="bottomRight">
 								<template slot="content">
 									<a @click="hide">仪表盘</a>
 									<br/>
 									<a-button type="primary" @click="hide" style="margin-top: 1em">关闭所有</a-button>
 								</template>
-								<a-icon type="setting" class="close-all" />
+								<a-icon type="setting" class="close-all"/>
 							</a-popover>
 						</a-tabs>
 					</div>
 				</a-layout-content>
 			</a-layout>
 		</a-layout>
+		<!--修改密码对话框-->
 		<a-modal v-model="updatePasswordVisible"
 				 title="修改密码"
 				 :mask-closable="false"
@@ -87,6 +108,7 @@
 				</a-form-model-item>
 			</a-form-model>
 		</a-modal>
+		<!--退出登录对话框-->
 		<a-modal v-model="exitLoginVisible"
 				 title="退出登录"
 				 :mask-closable="false"
@@ -100,52 +122,14 @@
 </template>
 
 <script>
-import logoIcon from "@/assets/logo.png";
 import util from "@/common/util";
-import {Menu} from 'ant-design-vue';
 
-const SubMenu = {
-	template: `
-		<a-sub-menu :key="menuInfo.key" v-bind="$props" v-on="$listeners">
-		<span slot="title">
-          <a-icon :type="menuInfo.iconType"/><span>{{ menuInfo.title }}</span>
-        </span>
-		<template v-for="item in menuInfo.children">
-			<a-menu-item v-if="item.children.length === 0"
-						 :key="getKey(item.key, item.url, menuInfo.title, item.title)">
-				<a-icon :type="item.iconType"/>
-				<span>{{ item.title }}</span>
-			</a-menu-item>
-			<sub-menu v-else :key="getKey(item.key, item.url, menuInfo.title, item.title)" :menu-info="item"/>
-		</template>
-		</a-sub-menu>
-	`,
-	name: "SubMenu",
-	// must add isSubMenu: true
-	isSubMenu: true,
-	props: {
-		...Menu.SubMenu.props,
-		// Cannot overlap with properties within Menu.SubMenu.props
-		menuInfo: {
-			type: Object,
-			default: () => ({}),
-		},
-	},
-	methods: {
-		getKey(key, url, menuInfoTitle, itemTitle) {
-			return key + "," + url + "," + menuInfoTitle + "," + itemTitle;
-		}
-	}
-};
 export default {
-	components: {
-		"sub-menu": SubMenu,
-	},
 	name: "BlogIndex",
 	data() {
 		const panes = [
-			{ title: '仪表盘', content: '仪表盘内容', key: '1', closable: false },
-			{ title: 'Tab 2', content: 'Content of Tab 2', key: '2' },
+			{title: '仪表盘', content: '仪表盘内容', key: '1', closable: false},
+			{title: '字典管理', content: 'Content of Tab 2', key: '2'},
 		];
 		let validatePass = (rule, value, callback) => {
 			if (!this.$util.isStringNotNull(value)) {
@@ -167,6 +151,8 @@ export default {
 			}
 		};
 		return {
+			// 默认选中的一级菜单key
+			defaultSelectLevel1MenuKey: ['dev'],
 			visible: false,
 			activeKey: panes[0].key,
 			panes,
@@ -185,7 +171,6 @@ export default {
 			},
 			updatePasswordVisible: false,
 			exitLoginVisible: false,
-			logoIcon: logoIcon,
 			userInfo: {
 				id: 0,
 				username: "未登录用户",
@@ -202,13 +187,13 @@ export default {
 		updatePassword(formName) {
 			this.$refs[formName].validate(valid => {
 				if (valid) {
-					this.$api.user.updateUserPassword({
+					this.$api.user.updatePassword({
 						userId: this.userInfo.id,
 						password: this.passwordForm.pass
-					}, res => {
+					}, () => {
 						this.$success({
 							title: "提示",
-							content: res.message,
+							content: "密码修改成功",
 							okText: "朕知道了"
 						});
 						setTimeout(() => {
@@ -224,16 +209,19 @@ export default {
 			});
 		},
 		getUserInfo() {
-			this.$api.user.getUserInfo({id: 0}, res => {
-				this.userInfo = res.data;
+			this.$api.user.queryObject({id: 0}, res => {
+				this.userInfo = res.data.user;
 			});
 		},
+		/**
+		 * 退出登录
+		 */
 		exitLogin() {
 			this.exitLoginVisible = false;
 			this.$api.user.exitLogin(null, res => {
 				this.$success({
 					title: "提示",
-					content: res.message,
+					content: "成功退出登录",
 					okText: "朕知道了"
 				});
 				setTimeout(() => {
@@ -264,15 +252,6 @@ export default {
 			if (this.$route.path !== targetRoute) {
 				this.$router.push(item.key.split(",")[1]);
 			}
-		},
-		getKey(key, url, title) {
-			return key + "," + url + "," + title;
-		},
-		toggleCollapsed() {
-			this.collapsed = !this.collapsed;
-		},
-		callback(key) {
-			console.log(key);
 		},
 		onEdit(targetKey, action) {
 			this[action](targetKey);
