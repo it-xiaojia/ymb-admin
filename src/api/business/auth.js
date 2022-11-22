@@ -4,44 +4,44 @@ import http from "@/api/http";
 const BASE_URL = "/auth/";
 
 /**
- * 获取权限列表
+ * 查询一个对象
  */
-function getAuthList(params, successCallBack, failCallBack) {
-	http.request(BASE_URL + "getAuthList", params, successCallBack, failCallBack);
+function queryObject(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "queryObject", params, successCallBack, failCallBack);
 }
 
 /**
- * 新增权限
+ * 查询对象列表
  */
-function addAuth(params, successCallBack, failCallBack) {
-	http.request(BASE_URL + "addAuth/", params, successCallBack, failCallBack);
+function queryList(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "queryList", params, successCallBack, failCallBack);
 }
 
 /**
- * 通过权限ID查询权限信息
+ * 新增
  */
-function getAuthById(params, successCallBack, failCallBack) {
-	http.request(BASE_URL + "getAuthById/", params, successCallBack, failCallBack);
+function handleAdd(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "add", params, successCallBack, failCallBack);
 }
 
 /**
- * 修改权限
+ * 更新
  */
-function updateAuth(params, successCallBack, failCallBack) {
-	http.request(BASE_URL + "updateAuth", params, successCallBack, failCallBack);
+function handleUpdate(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "update", params, successCallBack, failCallBack);
 }
 
 /**
- * 删除权限
+ * 删除
  */
-function deleteAuth(params, successCallBack, failCallBack) {
-	http.request(BASE_URL + "deleteAuth", params, successCallBack, failCallBack);
+function handleDelete(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "delete", params, successCallBack, failCallBack);
 }
 
 export default {
-	getAuthList,
-	addAuth,
-	getAuthById,
-	updateAuth,
-	deleteAuth
+	queryObject,
+	queryList,
+	handleAdd,
+	handleUpdate,
+	handleDelete
 }

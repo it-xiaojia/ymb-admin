@@ -4,44 +4,44 @@ import http from "@/api/http";
 const BASE_URL = "/article/";
 
 /**
- * 获取文章列表
+ * 查询一个对象
  */
-function getArticleList(params, successCallBack, failCallBack) {
-	http.request(BASE_URL + "getArticleList", params, successCallBack, failCallBack);
+function queryObject(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "queryObject", params, successCallBack, failCallBack);
 }
 
 /**
- * 查询一篇文章
+ * 查询对象列表
  */
-function getArticle(params, successCallBack, failCallBack) {
-	http.request(BASE_URL + "getArticle", params, successCallBack, failCallBack);
+function queryList(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "queryList", params, successCallBack, failCallBack);
 }
 
 /**
- * 写文章
+ * 新增
  */
-function writeArticle(params, successCallBack, failCallBack) {
-	http.request(BASE_URL + "writeArticle", params, successCallBack, failCallBack);
+function handleAdd(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "add", params, successCallBack, failCallBack);
 }
 
 /**
- * 修改文章
+ * 更新
  */
-function updateArticle(params, successCallBack, failCallBack) {
-	http.request(BASE_URL + "updateArticle", params, successCallBack, failCallBack);
+function handleUpdate(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "update", params, successCallBack, failCallBack);
 }
 
 /**
- * 删除文章
+ * 删除
  */
-function deleteArticle(params, successCallBack, failCallBack) {
-	http.request(BASE_URL + "deleteArticle", params, successCallBack, failCallBack);
+function handleDelete(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "delete", params, successCallBack, failCallBack);
 }
 
 export default {
-	getArticleList,
-	getArticle,
-	writeArticle,
-	updateArticle,
-	deleteArticle
+	queryObject,
+	queryList,
+	handleAdd,
+	handleUpdate,
+	handleDelete
 }

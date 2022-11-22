@@ -1,7 +1,7 @@
-// 角色API接口封装
+// 日志API接口封装
 import http from "@/api/http";
 
-const BASE_URL = "/role/";
+const BASE_URL = "/log/";
 
 /**
  * 查询一个对象

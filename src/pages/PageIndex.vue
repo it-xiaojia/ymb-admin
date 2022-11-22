@@ -9,8 +9,7 @@
 					忆梦博客-管理端
 				</div>
 				<!--侧边菜单（二级菜单）-->
-				<a-menu mode="inline" :default-selected-keys="['k1']" @click="toUrl"
-						:inline-collapsed="collapsed">
+				<a-menu mode="inline" :default-selected-keys="defaultSelectMenuKey.level2Key">
 					<a-menu-item key="k1">
 						<a-icon type="setting"/>
 						<span>字典管理</span>
@@ -33,7 +32,7 @@
 					<a-row style="margin-top: 0.5em">
 						<!--顶部菜单栏（一级菜单）-->
 						<a-col :span="14" style="padding-left: 1em">
-							<a-menu v-model="defaultSelectLevel1MenuKey" mode="horizontal">
+							<a-menu v-model="defaultSelectMenuKey.level1Key" mode="horizontal">
 								<a-menu-item key="dev">
 									<a-icon type="appstore"/>
 									开发管理
@@ -51,7 +50,7 @@
 						<!--用户操作区域-->
 						<a-col :span="10" style="text-align: right;padding-right: 24px">
 							<no-select-font style="margin-right: 5px;font-size: 0.8em"
-											:text="'你好！管理员' + '-' + userInfo.username"/>
+											:text="'你好！' + userInfo.roleName + '-' + userInfo.username"/>
 							<a href="#" @click.prevent="updatePasswordVisible = true" class="sys">[修改密码]</a>
 							<a href="#" @click.prevent="exitLoginVisible = true" class="sys">[退出登录]</a>
 						</a-col>
@@ -151,13 +150,17 @@ export default {
 			}
 		};
 		return {
-			// 默认选中的一级菜单key
-			defaultSelectLevel1MenuKey: ['dev'],
+			// 默认选中的菜单key对象
+			defaultSelectMenuKey: {
+				// 一级菜单
+				level1Key: ['dev'],
+				// 二级菜单
+				level2Key: ['k1']
+			},
 			visible: false,
 			activeKey: panes[0].key,
 			panes,
 			newTabIndex: 0,
-			collapsed: false,
 			current: ['mail'],
 			level1Title: "忆梦博客",
 			level2Title: "仪表盘",
@@ -174,14 +177,35 @@ export default {
 			userInfo: {
 				id: 0,
 				username: "未登录用户",
-				userRole: {},
-				authMenuList: []
+				roleId: 0,
+				roleName: "未知角色"
 			},
 		}
 	},
 	methods: {
+		/**
+		 * 查询用户信息
+		 */
+		queryUserInfo() {
+			// 查询基本信息
+			this.$api.user.queryObject({id: 0}, res => {
+				this.userInfo = res.data.user;
+				// 根据基本信息中的角色ID查询用户所属的角色
+				// this.$api.role.queryObject({id: this.userInfo.userRoleId}, res => {
+				// 	this.userInfo.roleName = res.data.role.name;
+				// });
+			});
+			// 根据用户所属角色所拥有的权限
+			this.queryRoleAuthMenu(0);
+		},
+		/**
+		 * 根据父权限ID查询角色所拥有的单级权限菜单
+		 * @param parentAuthId 父权限ID
+		 */
+		queryRoleAuthMenu(parentAuthId) {
+
+		},
 		hide() {
-			console.log(111);
 			this.visible = false;
 		},
 		updatePassword(formName) {
@@ -208,11 +232,7 @@ export default {
 				}
 			});
 		},
-		getUserInfo() {
-			this.$api.user.queryObject({id: 0}, res => {
-				this.userInfo = res.data.user;
-			});
-		},
+
 		/**
 		 * 退出登录
 		 */
@@ -288,7 +308,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.getUserInfo();
+		this.queryUserInfo();
 	}
 }
 </script>
