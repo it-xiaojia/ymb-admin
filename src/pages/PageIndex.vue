@@ -50,7 +50,7 @@
 						<!--用户操作区域-->
 						<a-col :span="10" style="text-align: right;padding-right: 24px">
 							<no-select-font style="margin-right: 5px;font-size: 0.8em"
-											:text="'你好！' + userInfo.roleName + '-' + userInfo.username"/>
+											:text="'你好！' + userInfo.roleName + '-' + userInfo.user.username"/>
 							<a href="#" @click.prevent="updatePasswordVisible = true" class="sys">[修改密码]</a>
 							<a href="#" @click.prevent="exitLoginVisible = true" class="sys">[退出登录]</a>
 						</a-col>
@@ -175,10 +175,10 @@ export default {
 			updatePasswordVisible: false,
 			exitLoginVisible: false,
 			userInfo: {
-				id: 0,
-				username: "未登录用户",
-				roleId: 0,
-				roleName: "未知角色"
+				user: {},
+				roleName: "未知角色",
+				level1AuthList: [],
+				level2AuthList: []
 			},
 		}
 	},
@@ -188,15 +188,9 @@ export default {
 		 */
 		queryUserInfo() {
 			// 查询基本信息
-			this.$api.user.queryObject({id: 0}, res => {
-				this.userInfo = res.data.user;
-				// 根据基本信息中的角色ID查询用户所属的角色
-				// this.$api.role.queryObject({id: this.userInfo.userRoleId}, res => {
-				// 	this.userInfo.roleName = res.data.role.name;
-				// });
+			this.$api.user.queryIndexUserInfo(null, res => {
+				this.userInfo = res.data;
 			});
-			// 根据用户所属角色所拥有的权限
-			this.queryRoleAuthMenu(0);
 		},
 		/**
 		 * 根据父权限ID查询角色所拥有的单级权限菜单
@@ -212,7 +206,7 @@ export default {
 			this.$refs[formName].validate(valid => {
 				if (valid) {
 					this.$api.user.updatePassword({
-						userId: this.userInfo.id,
+						userId: this.userInfo.user.id,
 						password: this.passwordForm.pass
 					}, () => {
 						this.$success({
@@ -238,7 +232,7 @@ export default {
 		 */
 		exitLogin() {
 			this.exitLoginVisible = false;
-			this.$api.user.exitLogin(null, res => {
+			this.$api.user.exitLogin(null, () => {
 				this.$success({
 					title: "提示",
 					content: "成功退出登录",

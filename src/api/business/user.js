@@ -46,6 +46,13 @@ function login(params, successCallBack, failCallBack) {
 }
 
 /**
+ * 根据token查询主页用户信息
+ */
+function queryIndexUserInfo(params, successCallBack, failCallBack) {
+	http.request(BASE_URL + "queryIndexUserInfo", params, successCallBack, failCallBack);
+}
+
+/**
  * 修改用户密码
  */
 function updatePassword(params, successCallBack, failCallBack) {
@@ -73,6 +80,7 @@ export default {
 	handleUpdate,
 	handleDelete,
 	login,
+	queryIndexUserInfo,
 	updatePassword,
 	exitLogin,
 	resetDBStatus
