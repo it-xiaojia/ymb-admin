@@ -85,7 +85,7 @@ axios.interceptors.response.use(response => {
 				// 如果用户ID不为空，将用户ID传给服务端让服务端将数据库存储的用户状态修改为未登录状态
 				accessCredential = util.getLocalStorageValue(common.LOCAL_STORAGE_KEY.ACCESS_CREDENTIAL);
 				if (util.isStringNotNull(accessCredential)) {
-					user.clearUserDBStatus({
+					user.resetDBStatus({
 						credential: accessCredential
 					}, data => {
 						console.log(data.message);
@@ -128,7 +128,6 @@ function request(url, params, successCallBack, failCallBack) {
 		url: url,
 		data: params
 	}).then(res => {
-		console.log(res);
 		if (res !== undefined) {
 			switch (res.code) {
 				// 请求成功

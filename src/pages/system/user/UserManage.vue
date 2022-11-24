@@ -1,10 +1,6 @@
 <template>
 	<div>
-		<el-breadcrumb separator="/">
-			<el-breadcrumb-item :to="{ path: '/' }">忆梦博客</el-breadcrumb-item>
-			<el-breadcrumb-item>用户管理</el-breadcrumb-item>
-		</el-breadcrumb>
-		<el-divider/>
+		<h1>用户管理</h1>
 	</div>
 </template>
 

@@ -11,12 +11,12 @@ const router = new Router({
 			path: "/",
 			name: "PageIndex",
 			component: () => import("@/pages/PageIndex"),
-			redirect: "/index",
+			redirect: "/dashboard",
 			children: [
 				{
-					path: "index",
-					name: "IndexContent",
-					component: () => import("@/pages/IndexContent")
+					path: "dashboard",
+					name: "Dashboard",
+					component: () => import("@/pages/Dashboard")
 				},
 				{
 					path: "article",
